@@ -1,0 +1,10 @@
+//@version=4
+strategy("Simple RSI", overlay=true, initial_capital=800, currency='USD')
+
+longCondition = rsi(close, 14) < 30
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+shortCondition = rsi(close, 14) > 70
+if (shortCondition)
+    strategy.entry("Short", strategy.short)

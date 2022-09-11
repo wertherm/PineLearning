@@ -1,0 +1,28 @@
+//@version=4
+
+//format = format.price is used for selecting the formatting of output as prices in the study function
+//overlay = false means we desire the RSI lines to appear in a separate section. If it were a moving average to be plotted with the prices, overlay should be set to true
+study(title="Stochastic RSI", shorttitle="Stoch RSI", format=format.price, overlay=false, precision=2, resolution="")
+
+//create the smoothing values of the stochastic %K and %D. Since it comes from input, they can be changed at will
+smoothK = input(3, "K", minval=1)
+smoothD = input(3, "D", minval=1)
+
+lengthRSI = input(14, "RSI Length", minval=1) //define the RSI length as an input parameter called RSI-Length
+lengthStoch = input(14, "Stochastic Length", minval=1) //defined the variable lengthStoch, computed from the input parameter
+
+src = input(close, title="RSI Source") //src will collect the input values on every bar. The default is the bar close, but it may be modified by other values such as (o+c)/2
+rsi1 = rsi(src, lengthRSI) //creates the variable rsi1 that stores the time series of the rsi
+
+//completes the calculation of the stochastic rsi
+k = sma(stoch(rsi1, rsi1, rsi1, lengthStoch), smoothK)
+d = sma(k, smoothD)
+
+//plot the overbought and oversold limits of 80 and 20
+plot(k, "K", color=#2962FF)
+plot(d, "D", color=#FF6D00)
+
+//filling the mid-band with a distinctive color
+h0 = hline(80, "Upper Band", color=#787B86)
+h1 = hline(20, "Lower Band", color=#787B86)
+fill(h0, h1, color=color.rgb(33, 150, 243, 90), title="Background")

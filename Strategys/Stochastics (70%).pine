@@ -1,0 +1,26 @@
+//@version=4
+strategy(title="Stochastics strategy", overlay=true, scale=scale.left)
+
+// Inputs
+length  = input(title="Length", type=input.integer, defval=14)
+dLength = input(title="D Length", type=input.integer, defval=3)
+obLevel = input(title="Overbought", type=input.integer, defval=80)
+osLevel = input(title="Oversold", type=input.integer, defval=20)
+
+// Compute values
+stochK = stoch(close, high, low, length)
+stochD = sma(stochK, dLength)
+
+// Plot values
+//plot(series=stochK, color=#1E90FF, title="K")
+//plot(series=stochD, color=orange, title="D")
+
+hline(price=obLevel, color=#C0C0C0)
+hline(price=osLevel, color=#C0C0C0)
+
+// Submit orders
+if (crossunder(stochK, osLevel))
+    strategy.entry(id="Enter Long", long=true)
+
+if (crossover(stochK, obLevel))
+    strategy.entry(id="Enter Short", long=false)

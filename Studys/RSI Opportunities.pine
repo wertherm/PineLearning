@@ -1,0 +1,20 @@
+//@version=4
+study(title='RSI Opportunities', overlay=true)
+
+rsi = rsi(close, 14)
+mediaMovelSimples200 = sma(close, 200)
+
+rsiCompra = crossover(rsi, 30)
+rsiVenda = crossunder(rsi, 70)
+fechamento200 = close > mediaMovelSimples200
+
+sinais_compra = rsiCompra //Sinais de compra aparecem apenas quando o RSI está fora da zona de sobrecompra
+sinais_venda = rsiVenda and fechamento200 //Sinais de venda aparecem apenas quando o RSI está fora da zona de sobrevenda e o preço de fechamento acima da média móvel simples de 200
+
+plotshape(sinais_compra, style=shape.triangleup, text='comprar', color=color.green)
+plotshape(sinais_venda, style=shape.triangledown, text='vender', color=color.red)
+
+plot(mediaMovelSimples200)
+
+//alertcondition(sinais_compra, title='rsi < 30', message='RSI is below 30')
+//alertcondition(sinais_venda, title='rsi > 70', message='RSI es 70')

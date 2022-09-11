@@ -1,0 +1,40 @@
+//@version=4
+
+strategy("RSI Powerzones", overlay=true, initial_capital=800, currency='USD')
+
+// Strategy Rules:
+// 1. $SPY must be trading above its 200-day simple moving average.
+// 2. When the 4-period RSI of $SPY closes under 30 buy $SPY on the close.
+// 3. Buy a second unit if the 4-period RSI closes below 25 at any time while the position is open.
+// 4. Sell when the 4-period RSI closes above 55
+//
+// Prefer 70-80 delta in-the-money call contracts
+
+// User provided values
+anoInicio = input(2021, "Ano Inicio do Backtest")
+mesInicio = input(08, "Mes Inicio do Backtest")
+diaInicio = input(1, "Dia Inicio do Backtest")
+periodoInicio = timestamp(anoInicio, mesInicio, diaInicio, 0, 0)
+
+anoFim = input(2021, "Ano Final do Backtest")
+mesFim = input(09, "Mes Final do Backtest")
+diaFim = input(23, "Dia Final do Backtest")
+periodoFim = timestamp(anoFim, mesFim, diaFim, 0, 0)
+
+// Entry and exit RSI readings
+RSIEntrada = input(30, "Entrada (RSI)")
+RSISaida = input(55, "Saída (RSI)")
+RSIPeriodo = input(4, "Período (RSI)")
+
+backtestConfirmado() =>
+    time >= periodoInicio and time <= periodoFim ? true : false
+
+mediaMovelSimples200 = sma(close, 200)  // 200-day moving average
+rsi = rsi(close, RSIPeriodo)  // relative strength indicator with custom length
+condicaoLong = close > mediaMovelSimples200  // closing price is above 200-day sma
+
+plot(mediaMovelSimples200)
+
+if condicaoLong and backtestConfirmado()
+    strategy.entry("CALL", strategy.long, 1, when=rsi <= RSIEntrada)
+    strategy.close("CALL", when=rsi >= RSISaida)
